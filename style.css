@@ -1,0 +1,598 @@
+:root {
+  /* Neutral near-blacks — no blue cast */
+  --ink-950: #08090b;
+  --ink-900: #0e1013;
+  --ink-800: #16181c;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.16);
+
+  --fg: #f5f5f4;
+  --fg-dim: #8a8a8f;
+
+  /* Exactly two accents */
+  --mta-green: #00933c;
+  --safety-yellow: #fccc0a;
+  --error: #ff4d5e;
+
+  --r: 4px;
+
+  /* Aceternity's zoom steps, overridden on short viewports */
+  --kb-zoom: 0.8;
+}
+
+@media (min-width: 640px)  { :root { --kb-zoom: 1.25; } }
+@media (min-width: 768px)  { :root { --kb-zoom: 1.5; } }
+@media (min-width: 1024px) { :root { --kb-zoom: 1.75; } }
+@media (min-width: 1280px) { :root { --kb-zoom: 2; } }
+@media (max-height: 860px) { :root { --kb-zoom: 1.5; } }
+@media (max-height: 760px) { :root { --kb-zoom: 1.25; } }
+@media (max-height: 640px) { :root { --kb-zoom: 1; } }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--ink-950);
+  color: var(--fg);
+  font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  height: 100dvh;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 24px 20px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+}
+
+/* ---------- Masthead ---------- */
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bullet {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--mta-green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.masthead-text {
+  min-width: 0;
+}
+
+.masthead-text h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.masthead-text p {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--fg-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.masthead-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.counter {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+}
+
+.mute {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--fg-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mute:hover {
+  color: var(--fg);
+  border-color: var(--line-strong);
+}
+
+.mute svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mute .mute-off {
+  display: none;
+}
+
+.mute.is-muted .mute-on {
+  display: none;
+}
+
+.mute.is-muted .mute-off {
+  display: block;
+}
+
+/* ---------- Progress rail ---------- */
+
+.progress-map-wrap {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.progress-map-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.progress-map {
+  display: block;
+}
+
+/* ---------- Scene ---------- */
+
+.scene-wrap {
+  position: relative;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: #000;
+  line-height: 0;
+}
+
+.scene-wrap svg#scene {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sign-bullet-text {
+  fill: #fff;
+  font-weight: 700;
+  font-size: 19px;
+  text-anchor: middle;
+  font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+}
+
+.sign-station-text {
+  fill: var(--fg);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+}
+
+.train-bullet-text {
+  fill: #fff;
+  font-weight: 700;
+  font-size: 8px;
+  text-anchor: middle;
+  font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Win overlay ---------- */
+
+.win-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  line-height: normal;
+}
+
+.win-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.win-card {
+  background: var(--ink-900);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--mta-green);
+  border-radius: var(--r);
+  padding: 24px 28px;
+  max-width: 420px;
+}
+
+.win-eyebrow {
+  display: block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mta-green);
+  margin-bottom: 8px;
+}
+
+.win-title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.win-card p {
+  color: var(--fg-dim);
+  font-size: 13px;
+  margin: 8px 0 20px;
+}
+
+.win-card button {
+  background: var(--mta-green);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  padding: 9px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.win-card button:hover {
+  background: #00a844;
+}
+
+/* ---------- Answer zone ---------- */
+
+.answer-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.track-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 52px;
+  transition: opacity 0.25s ease;
+}
+
+.track-bar.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stop-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  transition: opacity 0.2s ease;
+}
+
+.stop-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stop-chip--prev {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.stop-chip--next {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.stop-chip.is-empty {
+  opacity: 0;
+}
+
+.chip-arrow {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+.answer-form {
+  flex: 1.7 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+}
+
+/* No CSS transform/transition here — GSAP owns this element's transform. */
+.answer-form input {
+  flex: 1;
+  min-width: 0;
+  max-width: 320px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  padding: 6px 4px;
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.answer-form input::placeholder {
+  font-size: 15px;
+  font-weight: 400;
+  color: #55565c;
+}
+
+.answer-form input:focus {
+  border-bottom-color: var(--mta-green);
+}
+
+.answer-form input.wrong {
+  border-bottom-color: var(--error);
+}
+
+.submit-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r);
+  background: var(--mta-green);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submit-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.submit-btn:hover {
+  background: #00a844;
+}
+
+.feedback {
+  min-height: 15px;
+  margin: 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--error);
+  text-align: center;
+}
+
+/* ---------- Keyboard mount ---------- */
+
+.keyboard-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* Light thrown up from the keyboard into the scene above it */
+.keyboard-wrap::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: min(920px, 96%);
+  height: 160px;
+  transform: translateX(-50%);
+  background: radial-gradient(58% 100% at 50% 100%, rgb(255 244 222 / 0.11), transparent 72%);
+  pointer-events: none;
+}
+
+#keyboard {
+  zoom: var(--kb-zoom);
+}
+
+/* ---------- Aceternity keyboard — values ported 1:1 from the component ---------- */
+
+.kb-root {
+  width: fit-content;
+  margin: 0 auto;
+  /* The component inherits the default sans stack; keep it off the game font. */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.kb-pad {
+  width: fit-content;
+  border-radius: 12px;
+  background: #e5e5e5;
+  padding: 4px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), inset 0 0 0 1px rgb(0 0 0 / 0.05);
+}
+
+.kb-row {
+  margin-bottom: 2px;
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+.kb-cap {
+  border-radius: 4px;
+  padding: 0.5px;
+}
+
+.kb-cap--tl { border-top-left-radius: 12px; }
+.kb-cap--tr { border-top-right-radius: 12px; }
+.kb-cap--bl { border-bottom-left-radius: 12px; }
+.kb-cap--br { border-bottom-right-radius: 12px; }
+
+.kb-key {
+  display: flex;
+  height: 24px;
+  width: 24px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3.5px;
+  background: #f3f4f6;
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5), 0px 1px 1px 0px rgba(0, 0, 0, 0.1),
+    0px 1px 0px 0px rgba(255, 255, 255, 1) inset;
+  transition: transform 75ms;
+  font: inherit;
+}
+
+.kb-key--tl { border-top-left-radius: 8px; }
+.kb-key--tr { border-top-right-radius: 8px; }
+.kb-key--bl { border-bottom-left-radius: 8px; }
+.kb-key--br { border-bottom-right-radius: 8px; }
+
+.kb-key:active,
+.kb-key.is-pressed {
+  transform: scale(0.98);
+}
+
+.kb-key.is-pressed {
+  background: rgb(243 244 246 / 0.8);
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5), 0px 1px 1px 0px rgba(0, 0, 0, 0.1),
+    0px 1px 0px 0px rgba(255, 255, 255, 0.5) inset;
+}
+
+.kb-face {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 5px;
+  color: #404040;
+}
+
+.kb-face--bl {
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-bottom: 2px;
+  padding-left: 4px;
+}
+
+.kb-face--br {
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding-right: 4px;
+  padding-bottom: 2px;
+}
+
+.kb-face--mod {
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 4px;
+}
+
+.kb-icon {
+  height: 6px;
+  width: 6px;
+  flex-shrink: 0;
+}
+
+.kb-mt {
+  margin-top: 4px;
+}
+
+.kb-power {
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  padding: 1px;
+  background: linear-gradient(to bottom, #d4d4d4, #e5e5e5, #d4d4d4);
+}
+
+.kb-power > div {
+  height: 100%;
+  width: 100%;
+  border-radius: 9999px;
+  background: #f5f5f5;
+}
+
+.kb-arrows {
+  display: flex;
+  height: 24px;
+  width: 78.4px;
+  align-items: center;
+  justify-content: flex-end;
+  border-radius: 4px;
+  padding: 0.5px;
+}
+
+.kb-arrow-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Atmosphere ---------- */
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  pointer-events: none;
+  background: radial-gradient(125% 95% at 50% 40%, transparent 38%, rgb(0 0 0 / 0.6) 100%);
+}
