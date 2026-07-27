@@ -217,6 +217,7 @@ const SubwayKeyboard = (() => {
       });
       button.addEventListener("pointerup", () => release(spec.code));
       button.addEventListener("pointerleave", () => release(spec.code, true));
+      button.addEventListener("animationend", () => button.classList.remove("is-hit"));
     }
     return wrap;
   }
@@ -258,10 +259,23 @@ const SubwayKeyboard = (() => {
     nodes.forEach((n) => n.classList.toggle("is-pressed", on));
   }
 
+  // A held-down class alone can flicker past too fast to notice on a quick tap,
+  // so each press also starts a flash that outlives the press itself.
+  function flash(code) {
+    const nodes = keyNodes.get(code);
+    if (!nodes) return;
+    nodes.forEach((n) => {
+      n.classList.remove("is-hit");
+      void n.offsetWidth; // restart the animation when the same key is retapped
+      n.classList.add("is-hit");
+    });
+  }
+
   function press(code) {
     if (pressed.has(code)) return;
     pressed.add(code);
     paint(code);
+    flash(code);
     if (window.SubwayAudio) window.SubwayAudio.keyDown(code);
   }
 

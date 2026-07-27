@@ -6,7 +6,7 @@ const Game = (() => {
   const DOT_STROKE = "#08090b";
 
   let currentIndex = 0;
-  let animating = false;
+  let activeTimeline = null;
   const els = {};
 
   function cacheEls() {
@@ -153,25 +153,27 @@ const Game = (() => {
     );
   }
 
-  function advance() {
-    animating = true;
+  function resetTransitVisuals() {
+    gsap.set([els.trainCar1, els.trainCar2], { x: 0 });
+    gsap.set(els.tunnelLights, { x: 0 });
+    setBlur(0);
+  }
+
+  // Plays the depart/transit/arrive loop as a self-contained visual effect,
+  // independent of game state. The +=/-= tweens net to zero over a full
+  // cycle, always returning the train to wherever it started.
+  function buildTransitTimeline(onComplete) {
+    if (activeTimeline) activeTimeline.kill();
     emit("subway:depart");
     const train = [els.trainCar1, els.trainCar2];
     const blur = { amount: 0 };
     const applyBlur = () => setBlur(blur.amount);
 
-    gsap.timeline({
+    activeTimeline = gsap.timeline({
       onComplete: () => {
-        currentIndex += 1;
-        updateProgressMap();
-        animating = false;
+        activeTimeline = null;
         emit("subway:arrive");
-        if (currentIndex === stations.length - 1) {
-          els.signName.textContent = stations[currentIndex];
-          showWin();
-        } else {
-          render();
-        }
+        if (onComplete) onComplete();
       },
     })
       .to(train, { x: "+=900", duration: 0.7, ease: "power2.in" })
@@ -184,6 +186,30 @@ const Game = (() => {
       .to(blur, { amount: 0, duration: 0.55, ease: "power2.out", onUpdate: applyBlur }, "<");
   }
 
+  function playTransit() {
+    buildTransitTimeline();
+  }
+
+  function playFinalTransit() {
+    buildTransitTimeline(() => {
+      currentIndex += 1;
+      updateProgressMap();
+      els.signName.textContent = stations[currentIndex];
+      showWin();
+    });
+  }
+
+  function commitAdvance() {
+    currentIndex += 1;
+    updateProgressMap();
+    render();
+  }
+
+  function advance() {
+    commitAdvance();
+    playTransit();
+  }
+
   function showWin() {
     updateCounter();
     els.trackBar.classList.add("hidden");
@@ -192,9 +218,7 @@ const Game = (() => {
 
   function reset() {
     currentIndex = 0;
-    gsap.set([els.trainCar1, els.trainCar2], { x: 0 });
-    gsap.set(els.tunnelLights, { x: 0 });
-    setBlur(0);
+    resetTransitVisuals();
     els.trackBar.classList.remove("hidden");
     els.winOverlay.classList.add("hidden");
     buildProgressMap();
@@ -203,14 +227,18 @@ const Game = (() => {
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (animating || currentIndex === stations.length - 1) return;
+    if (currentIndex === stations.length - 1) return;
 
     const value = els.input.value.trim();
     if (!value) return;
 
     const target = stations[currentIndex];
     if (Normalize.matches(value, target)) {
-      advance();
+      if (currentIndex === stations.length - 2) {
+        playFinalTransit();
+      } else {
+        advance();
+      }
     } else {
       els.feedback.textContent = "Not quite — check the spelling and try again.";
       emit("subway:wrong");

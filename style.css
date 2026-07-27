@@ -497,6 +497,7 @@ body {
 .kb-cap--br { border-bottom-right-radius: 12px; }
 
 .kb-key {
+  position: relative;
   display: flex;
   height: 24px;
   width: 24px;
@@ -509,7 +510,9 @@ body {
   background: #f3f4f6;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5), 0px 1px 1px 0px rgba(0, 0, 0, 0.1),
     0px 1px 0px 0px rgba(255, 255, 255, 1) inset;
-  transition: transform 75ms;
+  /* Slight overshoot so the cap springs back rather than easing back. */
+  transition: transform 140ms cubic-bezier(0.2, 0.9, 0.3, 1.25), background-color 140ms ease-out,
+    box-shadow 140ms ease-out;
   font: inherit;
 }
 
@@ -518,15 +521,54 @@ body {
 .kb-key--bl { border-bottom-left-radius: 8px; }
 .kb-key--br { border-bottom-right-radius: 8px; }
 
+/* The cap drops and sinks into the pad — the travel is what reads as a press. */
 .kb-key:active,
 .kb-key.is-pressed {
-  transform: scale(0.98);
+  transform: translateY(0.75px) scale(0.95);
+  background: #e3e5e8;
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5), 0px 0.5px 0.5px 0px rgba(0, 0, 0, 0.1),
+    0px 0.75px 1px 0px rgba(0, 0, 0, 0.18) inset;
+  /* Down is immediate; the springy return above only applies on release. */
+  transition-duration: 20ms;
+  transition-timing-function: linear;
 }
 
-.kb-key.is-pressed {
-  background: rgb(243 244 246 / 0.8);
-  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5), 0px 1px 1px 0px rgba(0, 0, 0, 0.1),
-    0px 1px 0px 0px rgba(255, 255, 255, 0.5) inset;
+.kb-key.is-pressed .kb-face {
+  color: #292a2a;
+}
+
+/* A tap can be shorter than the eye registers, so every press also fires this
+   one-shot flash, which always runs to completion. */
+.kb-key::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  /* Behind the legend, above the keycap — the glyph stays crisp through it. */
+  z-index: -1;
+}
+
+.kb-key.is-hit {
+  z-index: 1;
+}
+
+.kb-key.is-hit::after {
+  animation: kb-hit 240ms ease-out;
+}
+
+@keyframes kb-hit {
+  0% {
+    opacity: 1;
+    background: rgb(0 0 0 / 0.2);
+    box-shadow: 0 0 0 0 rgb(0 0 0 / 0.16);
+  }
+  100% {
+    opacity: 0;
+    background: rgb(0 0 0 / 0);
+    box-shadow: 0 0 0 3px rgb(0 0 0 / 0);
+  }
 }
 
 .kb-face {

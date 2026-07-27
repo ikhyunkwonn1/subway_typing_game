@@ -32,7 +32,14 @@ const Normalize = (() => {
   }
 
   function matches(input, target) {
-    return canonicalize(input) === canonicalize(target);
+    const canonicalInput = canonicalize(input);
+    if (canonicalInput === canonicalize(target)) return true;
+
+    // Dual/hyphenated names (e.g. "East 143rd Street–St. Mary's Street")
+    // also accept either half typed on its own.
+    return target
+      .split(/[–—-]/)
+      .some((part) => part.trim() && canonicalize(part) === canonicalInput);
   }
 
   return { canonicalize, matches };
