@@ -308,6 +308,9 @@ body {
   align-items: center;
   gap: 16px;
   min-height: 52px;
+  padding: 10px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px / 50%;
   transition: opacity 0.25s ease;
 }
 
@@ -398,30 +401,6 @@ body {
 
 .answer-form input.wrong {
   border-bottom-color: var(--error);
-}
-
-.submit-btn {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--r);
-  background: var(--mta-green);
-  color: #fff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.submit-btn svg {
-  width: 15px;
-  height: 15px;
-}
-
-.submit-btn:hover {
-  background: #00a844;
 }
 
 .feedback {
