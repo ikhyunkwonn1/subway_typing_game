@@ -183,26 +183,49 @@ body {
   display: block;
 }
 
-.sign-bullet-text {
-  fill: #fff;
-  font-weight: 700;
-  font-size: 19px;
-  text-anchor: middle;
-  font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+.station-sign {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(580px, calc(100% - 40px));
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  line-height: 1.15;
+  background: rgb(8 9 11 / 0.9);
+  border: 1px solid #23272d;
+  border-top-color: #383d44;
 }
 
-.sign-station-text {
-  fill: var(--fg);
+.station-sign-bullet {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--mta-green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#sign-station-name {
+  font-size: 21px;
   font-weight: 600;
-  font-size: 22px;
-  letter-spacing: -0.01em;
-  font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .train-bullet-text {
   fill: #fff;
   font-weight: 700;
-  font-size: 8px;
+  font-size: 7px;
   text-anchor: middle;
   font-family: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
 }

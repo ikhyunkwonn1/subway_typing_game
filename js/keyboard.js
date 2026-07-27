@@ -208,9 +208,12 @@ const SubwayKeyboard = (() => {
       keyNodes.get(spec.code).push(button);
 
       button.addEventListener("pointerdown", (e) => {
-        e.preventDefault(); // don't steal focus from the answer field
+        e.preventDefault();
         press(spec.code);
         type(spec.code);
+        // preventDefault alone doesn't reliably keep focus off the button,
+        // and physical typing must keep working after a click.
+        if (input) input.focus();
       });
       button.addEventListener("pointerup", () => release(spec.code));
       button.addEventListener("pointerleave", () => release(spec.code, true));

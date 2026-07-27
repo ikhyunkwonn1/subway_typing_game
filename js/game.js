@@ -2,6 +2,8 @@ const Game = (() => {
   const stations = Stations.list;
   const DOT_SPACING = 34;
   const DOT_MARGIN = 20;
+  const TRACK_IDLE = "#2a2e35";
+  const DOT_STROKE = "#08090b";
 
   let currentIndex = 0;
   let animating = false;
@@ -23,6 +25,21 @@ const Game = (() => {
     els.trainCar1 = document.getElementById("train-car-1");
     els.trainCar2 = document.getElementById("train-car-2");
     els.tunnelLights = document.getElementById("tunnel-lights");
+    els.stopCounter = document.getElementById("stop-counter");
+    els.trainBlur = document.getElementById("train-blur");
+  }
+
+  function emit(name) {
+    document.dispatchEvent(new CustomEvent(name));
+  }
+
+  function setBlur(amount) {
+    els.trainBlur.setAttribute("stdDeviation", amount + " 0");
+  }
+
+  function updateCounter() {
+    els.stopCounter.textContent =
+      String(currentIndex + 1).padStart(2, "0") + " / " + stations.length;
   }
 
   function svgEl(tag) {
@@ -42,7 +59,7 @@ const Game = (() => {
     track.setAttribute("y1", lineY);
     track.setAttribute("x2", width - DOT_MARGIN);
     track.setAttribute("y2", lineY);
-    track.setAttribute("stroke", "#2a3357");
+    track.setAttribute("stroke", TRACK_IDLE);
     track.setAttribute("stroke-width", 6);
     track.setAttribute("stroke-linecap", "round");
     svg.appendChild(track);
@@ -64,8 +81,8 @@ const Game = (() => {
       circle.setAttribute("cx", cx);
       circle.setAttribute("cy", lineY);
       circle.setAttribute("r", i === currentIndex ? 9 : 5);
-      circle.setAttribute("fill", i <= currentIndex ? Stations.LINE_COLOR : "#2a3357");
-      circle.setAttribute("stroke", "#0b0f1e");
+      circle.setAttribute("fill", i <= currentIndex ? Stations.LINE_COLOR : TRACK_IDLE);
+      circle.setAttribute("stroke", DOT_STROKE);
       circle.setAttribute("stroke-width", 2);
       circle.classList.add("progress-dot");
 
@@ -83,7 +100,7 @@ const Game = (() => {
       gsap.to(dot, {
         attr: {
           r: i === currentIndex ? 9 : 5,
-          fill: i <= currentIndex ? Stations.LINE_COLOR : "#2a3357",
+          fill: i <= currentIndex ? Stations.LINE_COLOR : TRACK_IDLE,
         },
         duration: 0.35,
       });
@@ -100,6 +117,7 @@ const Game = (() => {
 
   function render() {
     els.signName.textContent = stations[currentIndex];
+    updateCounter();
 
     if (currentIndex > 0) {
       els.prevStopName.textContent = stations[currentIndex - 1];
@@ -137,13 +155,17 @@ const Game = (() => {
 
   function advance() {
     animating = true;
+    emit("subway:depart");
     const train = [els.trainCar1, els.trainCar2];
+    const blur = { amount: 0 };
+    const applyBlur = () => setBlur(blur.amount);
 
     gsap.timeline({
       onComplete: () => {
         currentIndex += 1;
         updateProgressMap();
         animating = false;
+        emit("subway:arrive");
         if (currentIndex === stations.length - 1) {
           els.signName.textContent = stations[currentIndex];
           showWin();
@@ -154,13 +176,16 @@ const Game = (() => {
     })
       .to(train, { x: "+=900", duration: 0.7, ease: "power2.in" })
       .to(els.tunnelLights, { x: "-=700", duration: 0.7, ease: "none" }, "<")
+      .to(blur, { amount: 7, duration: 0.5, ease: "power2.in", onUpdate: applyBlur }, "<")
       .set(train, { x: "-=1800" })
       .set(els.tunnelLights, { x: "+=1400" })
       .to(train, { x: "+=900", duration: 0.7, ease: "power2.out" })
-      .to(els.tunnelLights, { x: "-=700", duration: 0.7, ease: "none" }, "<");
+      .to(els.tunnelLights, { x: "-=700", duration: 0.7, ease: "none" }, "<")
+      .to(blur, { amount: 0, duration: 0.55, ease: "power2.out", onUpdate: applyBlur }, "<");
   }
 
   function showWin() {
+    updateCounter();
     els.trackBar.classList.add("hidden");
     els.winOverlay.classList.remove("hidden");
   }
@@ -169,6 +194,7 @@ const Game = (() => {
     currentIndex = 0;
     gsap.set([els.trainCar1, els.trainCar2], { x: 0 });
     gsap.set(els.tunnelLights, { x: 0 });
+    setBlur(0);
     els.trackBar.classList.remove("hidden");
     els.winOverlay.classList.add("hidden");
     buildProgressMap();
@@ -187,6 +213,7 @@ const Game = (() => {
       advance();
     } else {
       els.feedback.textContent = "Not quite — check the spelling and try again.";
+      emit("subway:wrong");
       shakeInput();
     }
   }
@@ -195,6 +222,12 @@ const Game = (() => {
     cacheEls();
     els.form.addEventListener("submit", handleSubmit);
     els.restartBtn.addEventListener("click", reset);
+    SubwayAudio.init({ button: "mute-btn" });
+    SubwayKeyboard.init({
+      mount: "keyboard",
+      input: "answer-input",
+      form: "answer-form",
+    });
     buildProgressMap();
     render();
   }

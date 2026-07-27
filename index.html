@@ -38,199 +38,216 @@
     </div>
 
     <main class="scene-wrap">
-      <svg id="scene" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet">
+      <!-- Anchored to the bottom so a short scene crops sky, never the train -->
+      <svg id="scene" viewBox="0 0 800 290" preserveAspectRatio="xMidYMax slice">
         <defs>
           <linearGradient id="tunnel-gradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#08090b" />
-            <stop offset="55%" stop-color="#121417" />
+            <stop offset="55%" stop-color="#111316" />
             <stop offset="100%" stop-color="#0a0b0d" />
           </linearGradient>
-          <radialGradient id="vanishing-glow" cx="50%" cy="58%" r="46%">
-            <stop offset="0%" stop-color="#3a4048" stop-opacity="0.55" />
-            <stop offset="100%" stop-color="#3a4048" stop-opacity="0" />
+          <radialGradient id="vanishing-glow" cx="50%" cy="52%" r="46%">
+            <stop offset="0%" stop-color="#2f353d" stop-opacity="0.32" />
+            <stop offset="100%" stop-color="#2f353d" stop-opacity="0" />
           </radialGradient>
           <radialGradient id="light-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.75" />
-            <stop offset="45%" stop-color="#ffd9a0" stop-opacity="0.14" />
+            <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.62" />
+            <stop offset="45%" stop-color="#ffd9a0" stop-opacity="0.11" />
             <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0" />
           </radialGradient>
 
-          <!-- Brushed stainless, lit from above -->
+          <!-- Brushed stainless under tunnel light -->
           <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#41464c" />
-            <stop offset="12%" stop-color="#8f959d" />
-            <stop offset="30%" stop-color="#c3c9d1" />
-            <stop offset="46%" stop-color="#767c84" />
-            <stop offset="72%" stop-color="#9aa1a9" />
-            <stop offset="100%" stop-color="#33373c" />
+            <stop offset="0%" stop-color="#17191c" />
+            <stop offset="11%" stop-color="#1e2126" />
+            <stop offset="14%" stop-color="#4a5058" />
+            <stop offset="24%" stop-color="#737a83" />
+            <stop offset="40%" stop-color="#4c525a" />
+            <stop offset="52%" stop-color="#5d646c" />
+            <stop offset="57%" stop-color="#4a5057" />
+            <stop offset="74%" stop-color="#393e44" />
+            <stop offset="88%" stop-color="#2a2e33" />
+            <stop offset="100%" stop-color="#131518" />
           </linearGradient>
           <linearGradient id="steel-skirt" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#2a2d31" />
-            <stop offset="100%" stop-color="#101214" />
+            <stop offset="0%" stop-color="#22252a" />
+            <stop offset="100%" stop-color="#0d0f11" />
           </linearGradient>
           <linearGradient id="cabin-light" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#e8f2ec" stop-opacity="0.92" />
-            <stop offset="100%" stop-color="#9fb4a8" stop-opacity="0.55" />
+            <stop offset="0%" stop-color="#eef8f1" stop-opacity="0.88" />
+            <stop offset="70%" stop-color="#bed5c6" stop-opacity="0.72" />
+            <stop offset="100%" stop-color="#63796c" stop-opacity="0.55" />
           </linearGradient>
           <linearGradient id="platform-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#1a1c1f" />
+            <stop offset="0%" stop-color="#191b1e" />
             <stop offset="100%" stop-color="#0a0b0c" />
           </linearGradient>
           <linearGradient id="spill" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0%" stop-color="#fff4de" stop-opacity="0.20" />
-            <stop offset="60%" stop-color="#fff4de" stop-opacity="0.04" />
+            <stop offset="0%" stop-color="#fff4de" stop-opacity="0.07" />
+            <stop offset="55%" stop-color="#fff4de" stop-opacity="0.015" />
             <stop offset="100%" stop-color="#fff4de" stop-opacity="0" />
           </linearGradient>
 
-          <!-- Fixed region so the train never clips as it travels off-frame -->
-          <filter id="train-motion" filterUnits="userSpaceOnUse" x="-1200" y="-120" width="3200" height="700">
+          <!-- Applied per car: a bbox-relative region stays small enough for
+               Chrome to rasterise, and it follows each car as GSAP moves it. -->
+          <filter id="train-motion" x="-25%" y="-25%" width="150%" height="150%">
             <feGaussianBlur id="train-blur" in="SourceGraphic" stdDeviation="0 0" />
           </filter>
+
+          <!-- One R142 car body, instanced three times -->
+          <g id="car-shell">
+            <circle cx="36" cy="103" r="5" fill="#15181b" />
+            <circle cx="62" cy="103" r="5" fill="#15181b" />
+            <circle cx="156" cy="103" r="5" fill="#15181b" />
+            <circle cx="182" cy="103" r="5" fill="#15181b" />
+            <rect x="14" y="97" width="76" height="7" fill="#0a0c0e" />
+            <rect x="130" y="97" width="76" height="7" fill="#0a0c0e" />
+
+            <rect x="0" y="2" width="220" height="98" rx="4" fill="url(#steel)" />
+            <rect x="0" y="2" width="220" height="12" rx="4" fill="#191c20" />
+            <rect x="0" y="12" width="220" height="1" fill="#5a616a" opacity="0.5" />
+            <rect x="0" y="86" width="220" height="14" fill="url(#steel-skirt)" />
+            <rect x="0" y="52" width="220" height="3" fill="#16355e" />
+            <rect x="0" y="55" width="220" height="1" fill="#0d1f39" />
+
+            <g fill="#000000" opacity="0.16">
+              <rect x="0" y="62" width="220" height="1" /><rect x="0" y="67" width="220" height="1" />
+              <rect x="0" y="72" width="220" height="1" /><rect x="0" y="77" width="220" height="1" />
+              <rect x="0" y="82" width="220" height="1" />
+            </g>
+
+            <g fill="#0b0e10">
+              <rect x="8" y="21" width="44" height="27" rx="2" />
+              <rect x="59" y="21" width="30" height="27" rx="2" />
+              <rect x="96" y="21" width="44" height="27" rx="2" />
+              <rect x="147" y="21" width="30" height="27" rx="2" />
+              <rect x="184" y="21" width="28" height="27" rx="2" />
+            </g>
+            <g fill="url(#cabin-light)">
+              <rect x="9.5" y="22.5" width="41" height="24" rx="1.5" />
+              <rect x="60.5" y="22.5" width="27" height="24" rx="1.5" />
+              <rect x="97.5" y="22.5" width="41" height="24" rx="1.5" />
+              <rect x="148.5" y="22.5" width="27" height="24" rx="1.5" />
+              <rect x="185.5" y="22.5" width="25" height="24" rx="1.5" />
+            </g>
+
+            <g stroke="#171a1e" stroke-width="0.9" fill="none">
+              <path d="M56 13 V 97" /><path d="M74 21 V 97" /><path d="M92 13 V 97" />
+              <path d="M144 13 V 97" /><path d="M162 21 V 97" /><path d="M180 13 V 97" />
+            </g>
+          </g>
+
+          <!-- Gangway between coupled cars -->
+          <g id="car-coupling">
+            <rect x="219" y="46" width="22" height="40" fill="#0d1013" />
+            <rect x="219" y="46" width="22" height="1" fill="#31363c" />
+            <rect x="219" y="85" width="22" height="1" fill="#22262a" />
+          </g>
         </defs>
 
-        <rect x="0" y="0" width="800" height="420" fill="url(#tunnel-gradient)" />
-        <rect x="0" y="0" width="800" height="420" fill="url(#vanishing-glow)" />
+        <rect x="0" y="0" width="800" height="290" fill="url(#tunnel-gradient)" />
+        <rect x="0" y="0" width="800" height="290" fill="url(#vanishing-glow)" />
 
-        <!-- Far wall: tunnel arches -->
-        <g id="tunnel-arches" fill="none" stroke="#212429" stroke-width="2.5">
-          <path d="M -40 268 Q 40 178 120 268" />
-          <path d="M 80 268 Q 160 178 240 268" />
-          <path d="M 200 268 Q 280 178 360 268" />
-          <path d="M 320 268 Q 400 178 480 268" />
-          <path d="M 440 268 Q 520 178 600 268" />
-          <path d="M 560 268 Q 640 178 720 268" />
-          <path d="M 680 268 Q 760 178 840 268" />
+        <!-- Far wall -->
+        <g id="tunnel-arches" fill="none" stroke="#1e2126" stroke-width="2">
+          <path d="M -40 150 Q 40 96 120 150" />
+          <path d="M 80 150 Q 160 96 240 150" />
+          <path d="M 200 150 Q 280 96 360 150" />
+          <path d="M 320 150 Q 400 96 480 150" />
+          <path d="M 440 150 Q 520 96 600 150" />
+          <path d="M 560 150 Q 640 96 720 150" />
+          <path d="M 680 150 Q 760 96 840 150" />
         </g>
-        <g stroke="#191c20" stroke-width="1.5" fill="none">
-          <path d="M0 268 H800" />
-          <path d="M0 176 H800" />
+        <g stroke="#171a1e" stroke-width="1.5" fill="none">
+          <path d="M0 96 H800" />
+          <path d="M0 150 H800" />
         </g>
 
         <!-- Lamp string: streams past during transit -->
         <g id="tunnel-lights">
           <g fill="url(#light-glow)">
-            <circle cx="-700" cy="146" r="26" /><circle cx="-580" cy="152" r="26" />
-            <circle cx="-460" cy="146" r="26" /><circle cx="-340" cy="152" r="26" />
-            <circle cx="-220" cy="146" r="26" /><circle cx="-100" cy="152" r="26" />
-            <circle cx="20" cy="146" r="26" /><circle cx="140" cy="152" r="26" />
-            <circle cx="260" cy="146" r="26" /><circle cx="380" cy="152" r="26" />
-            <circle cx="500" cy="146" r="26" /><circle cx="620" cy="152" r="26" />
-            <circle cx="740" cy="146" r="26" /><circle cx="860" cy="152" r="26" />
-            <circle cx="980" cy="146" r="26" /><circle cx="1100" cy="152" r="26" />
-            <circle cx="1220" cy="146" r="26" /><circle cx="1340" cy="152" r="26" />
-            <circle cx="1460" cy="146" r="26" /><circle cx="1580" cy="152" r="26" />
+            <circle cx="-700" cy="118" r="24" /><circle cx="-580" cy="124" r="24" />
+            <circle cx="-460" cy="118" r="24" /><circle cx="-340" cy="124" r="24" />
+            <circle cx="-220" cy="118" r="24" /><circle cx="-100" cy="124" r="24" />
+            <circle cx="20" cy="118" r="24" /><circle cx="140" cy="124" r="24" />
+            <circle cx="260" cy="118" r="24" /><circle cx="380" cy="124" r="24" />
+            <circle cx="500" cy="118" r="24" /><circle cx="620" cy="124" r="24" />
+            <circle cx="740" cy="118" r="24" /><circle cx="860" cy="124" r="24" />
+            <circle cx="980" cy="118" r="24" /><circle cx="1100" cy="124" r="24" />
+            <circle cx="1220" cy="118" r="24" /><circle cx="1340" cy="124" r="24" />
+            <circle cx="1460" cy="118" r="24" /><circle cx="1580" cy="124" r="24" />
           </g>
           <g fill="#ffe6bd">
-            <circle cx="-700" cy="146" r="2.4" /><circle cx="-580" cy="152" r="2.4" />
-            <circle cx="-460" cy="146" r="2.4" /><circle cx="-340" cy="152" r="2.4" />
-            <circle cx="-220" cy="146" r="2.4" /><circle cx="-100" cy="152" r="2.4" />
-            <circle cx="20" cy="146" r="2.4" /><circle cx="140" cy="152" r="2.4" />
-            <circle cx="260" cy="146" r="2.4" /><circle cx="380" cy="152" r="2.4" />
-            <circle cx="500" cy="146" r="2.4" /><circle cx="620" cy="152" r="2.4" />
-            <circle cx="740" cy="146" r="2.4" /><circle cx="860" cy="152" r="2.4" />
-            <circle cx="980" cy="146" r="2.4" /><circle cx="1100" cy="152" r="2.4" />
-            <circle cx="1220" cy="146" r="2.4" /><circle cx="1340" cy="152" r="2.4" />
-            <circle cx="1460" cy="146" r="2.4" /><circle cx="1580" cy="152" r="2.4" />
+            <circle cx="-700" cy="118" r="2" /><circle cx="-580" cy="124" r="2" />
+            <circle cx="-460" cy="118" r="2" /><circle cx="-340" cy="124" r="2" />
+            <circle cx="-220" cy="118" r="2" /><circle cx="-100" cy="124" r="2" />
+            <circle cx="20" cy="118" r="2" /><circle cx="140" cy="124" r="2" />
+            <circle cx="260" cy="118" r="2" /><circle cx="380" cy="124" r="2" />
+            <circle cx="500" cy="118" r="2" /><circle cx="620" cy="124" r="2" />
+            <circle cx="740" cy="118" r="2" /><circle cx="860" cy="124" r="2" />
+            <circle cx="980" cy="118" r="2" /><circle cx="1100" cy="124" r="2" />
+            <circle cx="1220" cy="118" r="2" /><circle cx="1340" cy="124" r="2" />
+            <circle cx="1460" cy="118" r="2" /><circle cx="1580" cy="124" r="2" />
           </g>
         </g>
 
         <!-- Track bed -->
         <g>
-          <rect x="0" y="286" width="800" height="20" fill="#0b0c0e" />
-          <rect x="0" y="292" width="800" height="1.5" fill="#2e3238" />
-          <rect x="0" y="301" width="800" height="1.5" fill="#26292e" />
-        </g>
-
-        <!-- Station sign, mounted on the tunnel wall -->
-        <g id="station-sign" transform="translate(400, 88)">
-          <rect x="-206" y="-31" width="412" height="62" fill="#0b0c0e" stroke="#2b2f35" stroke-width="1" />
-          <rect x="-206" y="-31" width="412" height="1.5" fill="#3a3f46" />
-          <circle cx="-172" cy="0" r="19" fill="#00933C" />
-          <text x="-172" y="7" class="sign-bullet-text">6</text>
-          <text id="sign-station-name" x="-138" y="7" class="sign-station-text">Pelham Bay Park</text>
+          <rect x="0" y="228" width="800" height="20" fill="#0a0b0d" />
+          <rect x="0" y="234" width="800" height="1.5" fill="#2b2f35" />
+          <rect x="0" y="243" width="800" height="1.5" fill="#23262b" />
         </g>
 
         <!-- Train (behind the platform edge) -->
-        <g filter="url(#train-motion)">
-          <g id="train">
-            <g id="train-car-2" transform="translate(430, 190)">
-              <rect x="0" y="98" width="220" height="14" fill="#0a0b0c" />
-              <circle cx="34" cy="106" r="7" fill="#1a1d20" />
-              <circle cx="64" cy="106" r="7" fill="#1a1d20" />
-              <circle cx="156" cy="106" r="7" fill="#1a1d20" />
-              <circle cx="186" cy="106" r="7" fill="#1a1d20" />
-              <rect x="0" y="2" width="220" height="98" rx="9" fill="url(#steel)" />
-              <rect x="0" y="76" width="220" height="24" fill="url(#steel-skirt)" />
-              <rect x="0" y="70" width="220" height="5" fill="#123a6b" />
-              <rect x="8" y="18" width="60" height="34" rx="3" fill="#0c0f11" />
-              <rect x="10" y="20" width="56" height="30" rx="2" fill="url(#cabin-light)" />
-              <rect x="80" y="18" width="60" height="34" rx="3" fill="#0c0f11" />
-              <rect x="82" y="20" width="56" height="30" rx="2" fill="url(#cabin-light)" />
-              <rect x="152" y="18" width="42" height="34" rx="3" fill="#0c0f11" />
-              <rect x="154" y="20" width="38" height="30" rx="2" fill="url(#cabin-light)" />
-              <g fill="none" stroke="#20242a" stroke-width="1">
-                <path d="M74 4 V 98" /><path d="M146 4 V 98" />
-              </g>
-              <g fill="#ffffff" opacity="0.05">
-                <rect x="0" y="58" width="220" height="1" /><rect x="0" y="63" width="220" height="1" />
-              </g>
-              <!-- Lead cab -->
-              <rect x="196" y="14" width="22" height="18" rx="2" fill="#0b0d0f" />
-              <circle cx="207" cy="23" r="6.5" fill="#00933C" />
-              <text x="207" y="27" class="train-bullet-text">6</text>
-              <circle cx="204" cy="88" r="4" fill="#fff3d4" />
-              <circle cx="204" cy="88" r="9" fill="#fff3d4" opacity="0.18" />
-              <circle cx="216" cy="88" r="3" fill="#ffd9d9" opacity="0.55" />
+        <g id="train">
+            <g id="train-car-2" transform="translate(430, 140)" filter="url(#train-motion)">
+              <use href="#car-shell" />
+              <!-- Lead car: side destination sign replaces the last window -->
+              <rect x="184" y="21" width="28" height="27" rx="2" fill="#08090b" />
+              <circle cx="198" cy="34" r="7.5" fill="#00933C" />
+              <text x="198" y="37.5" class="train-bullet-text">6</text>
+              <circle cx="215" cy="60" r="1.6" fill="#ffe4b0" />
             </g>
-            <g id="train-car-1" transform="translate(190, 190)">
-              <rect x="0" y="98" width="220" height="14" fill="#0a0b0c" />
-              <circle cx="34" cy="106" r="7" fill="#1a1d20" />
-              <circle cx="64" cy="106" r="7" fill="#1a1d20" />
-              <circle cx="156" cy="106" r="7" fill="#1a1d20" />
-              <circle cx="186" cy="106" r="7" fill="#1a1d20" />
-              <rect x="0" y="2" width="220" height="98" rx="9" fill="url(#steel)" />
-              <rect x="0" y="76" width="220" height="24" fill="url(#steel-skirt)" />
-              <rect x="0" y="70" width="220" height="5" fill="#123a6b" />
-              <rect x="8" y="18" width="60" height="34" rx="3" fill="#0c0f11" />
-              <rect x="10" y="20" width="56" height="30" rx="2" fill="url(#cabin-light)" />
-              <rect x="80" y="18" width="60" height="34" rx="3" fill="#0c0f11" />
-              <rect x="82" y="20" width="56" height="30" rx="2" fill="url(#cabin-light)" />
-              <rect x="152" y="18" width="60" height="34" rx="3" fill="#0c0f11" />
-              <rect x="154" y="20" width="56" height="30" rx="2" fill="url(#cabin-light)" />
-              <g fill="none" stroke="#20242a" stroke-width="1">
-                <path d="M74 4 V 98" /><path d="M146 4 V 98" />
+
+            <g id="train-car-1" transform="translate(190, 140)" filter="url(#train-motion)">
+              <!-- Trailing car rides along inside this group's transform -->
+              <g transform="translate(-240, 0)">
+                <use href="#car-shell" />
+                <use href="#car-coupling" />
               </g>
-              <g fill="#ffffff" opacity="0.05">
-                <rect x="0" y="58" width="220" height="1" /><rect x="0" y="63" width="220" height="1" />
-              </g>
+              <use href="#car-shell" />
+              <use href="#car-coupling" />
             </g>
-          </g>
         </g>
 
         <!-- Platform: the surface we're standing on -->
         <g id="platform">
-          <rect x="0" y="306" width="800" height="114" fill="url(#platform-gradient)" />
-          <rect x="0" y="306" width="800" height="4" fill="#08090a" />
-          <rect x="0" y="310" width="800" height="7" fill="#FCCC0A" />
-          <rect x="0" y="317" width="800" height="2" fill="#8a7106" />
-          <g fill="#0e1012">
-            <rect x="0" y="330" width="800" height="1" opacity="0.8" />
-          </g>
+          <rect x="0" y="246" width="800" height="44" fill="url(#platform-gradient)" />
+          <rect x="0" y="246" width="800" height="3" fill="#07080a" />
+          <rect x="0" y="249" width="800" height="6" fill="#c9a10c" />
+          <rect x="0" y="249" width="800" height="1.5" fill="#f0c81a" />
+          <rect x="0" y="255" width="800" height="1.5" fill="#6d5807" />
         </g>
 
         <!-- Foreground columns, framing the shot -->
         <g fill="#040405">
-          <rect x="-4" y="0" width="26" height="420" />
-          <rect x="778" y="0" width="26" height="420" />
+          <rect x="-4" y="0" width="24" height="290" />
+          <rect x="780" y="0" width="24" height="290" />
         </g>
-        <g fill="#ffffff" opacity="0.05">
-          <rect x="22" y="0" width="1.5" height="420" />
-          <rect x="776.5" y="0" width="1.5" height="420" />
+        <g fill="#ffffff" opacity="0.045">
+          <rect x="20" y="0" width="1.5" height="290" />
+          <rect x="778.5" y="0" width="1.5" height="290" />
         </g>
 
         <!-- Light rising from the keyboard below the frame -->
-        <rect x="0" y="250" width="800" height="170" fill="url(#spill)" />
+        <rect x="0" y="196" width="800" height="94" fill="url(#spill)" />
       </svg>
+
+      <!-- Wayfinding sign lives in HTML so the SVG crop can never hide it -->
+      <div class="station-sign">
+        <span class="station-sign-bullet">6</span>
+        <span id="sign-station-name">Pelham Bay Park</span>
+      </div>
 
       <div id="win-overlay" class="win-overlay hidden">
         <div class="win-card">
