@@ -1,0 +1,29 @@
+{
+  "id": "L",
+  "displayName": "L",
+  "color": "#A7A9AC",
+  "stations": [
+    { "id": "L01", "name": "8th Avenue", "aliases": ["8 Av"], "lat": 40.739864, "lng": -74.002578 },
+    { "id": "L02", "name": "6th Avenue", "aliases": ["6 Av"], "lat": 40.737356, "lng": -73.996021 },
+    { "id": "L03", "name": "14th Street", "aliases": ["14 St"], "lat": 40.734848, "lng": -73.989847 },
+    { "id": "L04", "name": "Union Square-14th Street", "aliases": ["Union Sq"], "lat": 40.735111, "lng": -73.990575 },
+    { "id": "L05", "name": "1st Avenue", "aliases": ["1 Av"], "lat": 40.733945, "lng": -73.981936 },
+    { "id": "L06", "name": "Bedford Avenue", "aliases": ["Bedford Av"], "lat": 40.714852, "lng": -73.957755 },
+    { "id": "L07", "name": "Lorimer Street", "aliases": ["Lorimer St"], "lat": 40.710889, "lng": -73.954433 },
+    { "id": "L08", "name": "Graham Avenue", "aliases": ["Graham Av"], "lat": 40.708333, "lng": -73.950833 },
+    { "id": "L09", "name": "Jefferson Street", "aliases": ["Jefferson St"], "lat": 40.706389, "lng": -73.939444 },
+    { "id": "L10", "name": "Myrtle-Willoughby Avenues", "aliases": ["Myrtle Av"], "lat": 40.701944, "lng": -73.936111 },
+    { "id": "L11", "name": "Morgan Avenue", "aliases": ["Morgan Av"], "lat": 40.697778, "lng": -73.930556 },
+    { "id": "L12", "name": "Montrose Avenue", "aliases": ["Montrose Av"], "lat": 40.695556, "lng": -73.925833 },
+    { "id": "L13", "name": "Broadway", "aliases": ["Broadway"], "lat": 40.693889, "lng": -73.918889 },
+    { "id": "L14", "name": "Halsey Street", "aliases": ["Halsey St"], "lat": 40.691389, "lng": -73.914167 },
+    { "id": "L15", "name": "Marcy Avenue", "aliases": ["Marcy Av"], "lat": 40.688611, "lng": -73.909722 },
+    { "id": "L16", "name": "Bedford-Nostrand", "aliases": ["Bedford"], "lat": 40.684444, "lng": -73.895833 },
+    { "id": "L17", "name": "Wilson Avenue", "aliases": ["Wilson Av"], "lat": 40.680278, "lng": -73.865278 },
+    { "id": "L18", "name": "Kosciuszko Street", "aliases": ["Kosciuszko St"], "lat": 40.678056, "lng": -73.854444 },
+    { "id": "L19", "name": "Myrtle-Willoughby Avenues", "aliases": ["Myrtle"], "lat": 40.663056, "lng": -73.783333 },
+    { "id": "L20", "name": "Halsey Street", "aliases": ["Halsey"], "lat": 40.652778, "lng": -73.711111 },
+    { "id": "L21", "name": "Canarsie-Rockaway Parkway", "aliases": ["Canarsie"], "lat": 40.621667, "lng": -73.836111 },
+    { "id": "L22", "name": "Rockaway Parkway", "aliases": ["Rockaway Pkwy"], "lat": 40.615556, "lng": -73.85 }
+  ]
+}

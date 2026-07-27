@@ -1,0 +1,26 @@
+{
+  "id": "W",
+  "displayName": "W",
+  "color": "#FCCC0A",
+  "stations": [
+    { "id": "W01", "name": "Astoria-Ditmars Boulevard", "aliases": ["Astoria"], "lat": 40.767222, "lng": -73.916667 },
+    { "id": "W02", "name": "30th Avenue", "aliases": ["30 Av"], "lat": 40.757778, "lng": -73.920556 },
+    { "id": "W03", "name": "Broadway", "aliases": ["Broadway"], "lat": 40.748056, "lng": -73.920556 },
+    { "id": "W04", "name": "Lexington Avenue-59th Street", "aliases": ["59 St"], "lat": 40.742222, "lng": -73.918889 },
+    { "id": "W05", "name": "5th Avenue-59th Street", "aliases": ["5 Av"], "lat": 40.739167, "lng": -73.914722 },
+    { "id": "W06", "name": "Grand Central-42nd Street", "aliases": ["Grand Central"], "lat": 40.726111, "lng": -73.899722 },
+    { "id": "W07", "name": "Times Square-42nd Street", "aliases": ["Times Sq"], "lat": 40.721667, "lng": -73.891111 },
+    { "id": "W08", "name": "34th Street-Herald Square", "aliases": ["Herald Sq"], "lat": 40.749722, "lng": -73.890556 },
+    { "id": "W09", "name": "28th Street", "aliases": ["28 St"], "lat": 40.745833, "lng": -73.888611 },
+    { "id": "W10", "name": "23rd Street", "aliases": ["23 St"], "lat": 40.741111, "lng": -73.886389 },
+    { "id": "W11", "name": "14th Street", "aliases": ["14 St"], "lat": 40.735556, "lng": -73.881667 },
+    { "id": "W12", "name": "9th Street", "aliases": ["9 St"], "lat": 40.730278, "lng": -73.878333 },
+    { "id": "W13", "name": "Canal Street", "aliases": ["Canal St"], "lat": 40.719167, "lng": -73.872778 },
+    { "id": "W14", "name": "Chambers Street", "aliases": ["Chambers St"], "lat": 40.713889, "lng": -73.867222 },
+    { "id": "W15", "name": "Cortlandt Street", "aliases": ["Cortlandt St"], "lat": 40.711389, "lng": -73.863056 },
+    { "id": "W16", "name": "Fulton Street", "aliases": ["Fulton St"], "lat": 40.707778, "lng": -73.860833 },
+    { "id": "W17", "name": "Wall Street", "aliases": ["Wall St"], "lat": 40.705556, "lng": -73.856667 },
+    { "id": "W18", "name": "Bowling Green", "aliases": ["Bowling Green"], "lat": 40.702778, "lng": -73.854444 },
+    { "id": "W19", "name": "Whitehall Terminal", "aliases": ["Whitehall"], "lat": 40.700278, "lng": -73.851667 }
+  ]
+}
