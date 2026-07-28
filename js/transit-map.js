@@ -1,9 +1,8 @@
 // Visual-only map renderer. It deliberately has no typing or scoring logic.
 const TransitMap = (() => {
   const NS = "http://www.w3.org/2000/svg";
-  // Match the wide scene panel so the route stays legible without cropping the
-  // train above or below the visible map area.
-  const CAMERA = { width: 900, height: 310 };
+  // The taller scene panel shows a broader stretch of the route at each stop.
+  const CAMERA = { width: 900, height: 480 };
   let svg;
   let data;
   let line;

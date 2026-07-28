@@ -16,17 +16,17 @@
 
   --r: 4px;
 
-  /* Aceternity's zoom steps, overridden on short viewports */
-  --kb-zoom: 0.8;
+  /* Keep the keyboard compact so the map remains the focal point. */
+  --kb-zoom: 0.4;
 }
 
-@media (min-width: 640px)  { :root { --kb-zoom: 1.25; } }
-@media (min-width: 768px)  { :root { --kb-zoom: 1.5; } }
-@media (min-width: 1024px) { :root { --kb-zoom: 1.75; } }
-@media (min-width: 1280px) { :root { --kb-zoom: 2; } }
-@media (max-height: 860px) { :root { --kb-zoom: 1.5; } }
-@media (max-height: 760px) { :root { --kb-zoom: 1.25; } }
-@media (max-height: 640px) { :root { --kb-zoom: 1; } }
+@media (min-width: 640px)  { :root { --kb-zoom: 0.625; } }
+@media (min-width: 768px)  { :root { --kb-zoom: 0.75; } }
+@media (min-width: 1024px) { :root { --kb-zoom: 0.875; } }
+@media (min-width: 1280px) { :root { --kb-zoom: 1; } }
+@media (max-height: 860px) { :root { --kb-zoom: 0.75; } }
+@media (max-height: 760px) { :root { --kb-zoom: 0.625; } }
+@media (max-height: 640px) { :root { --kb-zoom: 0.5; } }
 
 *,
 *::before,
@@ -550,7 +550,7 @@ body.is-competitive .question-ring {
   bottom: 100%;
   left: 50%;
   width: min(920px, 96%);
-  height: 160px;
+  height: 80px;
   transform: translateX(-50%);
   background: radial-gradient(58% 100% at 50% 100%, rgb(255 244 222 / 0.11), transparent 72%);
   pointer-events: none;
