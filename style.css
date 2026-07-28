@@ -241,14 +241,31 @@ body {
   border: 1px solid var(--line);
   border-radius: var(--r);
   overflow: hidden;
-  background: #000;
+  background: #d9edf4;
   line-height: 0;
 }
 
-.scene-wrap svg#scene {
+.scene-wrap #map-scene {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.map-stations circle {
+  transition: fill 0.25s ease, stroke-width 0.25s ease, r 0.25s ease;
+}
+
+.map-stations circle.is-complete {
+  fill: var(--mta-green);
+}
+
+.map-stations circle.is-current {
+  r: 14;
+  stroke-width: 6;
+}
+
+.map-train {
+  filter: drop-shadow(0 4px 5px rgb(0 67 31 / 0.24));
 }
 
 .station-sign {

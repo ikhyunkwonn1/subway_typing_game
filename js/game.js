@@ -12,8 +12,6 @@ const Game = (() => {
   const RING_INSET = 0.5; // centres the 2px stroke on the pill's 1px border
 
   let currentIndex = 0;
-  let activeTimeline = null;
-  let transitQueue = [];
   let startedAt = null;
   let tickHandle = null;
   let questionTimeline = null;
@@ -36,11 +34,7 @@ const Game = (() => {
     els.feedback = document.getElementById("feedback");
     els.winOverlay = document.getElementById("win-overlay");
     els.restartBtn = document.getElementById("restart-btn");
-    els.trainCar1 = document.getElementById("train-car-1");
-    els.trainCar2 = document.getElementById("train-car-2");
-    els.tunnelLights = document.getElementById("tunnel-lights");
     els.stopCounter = document.getElementById("stop-counter");
-    els.trainBlur = document.getElementById("train-blur");
     els.timer = document.getElementById("timer");
     els.modeToggle = document.getElementById("mode-toggle");
     els.ring = document.getElementById("question-ring");
@@ -52,10 +46,6 @@ const Game = (() => {
 
   function emit(name) {
     document.dispatchEvent(new CustomEvent(name));
-  }
-
-  function setBlur(amount) {
-    els.trainBlur.setAttribute("stdDeviation", amount + " 0");
   }
 
   function updateCounter() {
@@ -314,64 +304,19 @@ const Game = (() => {
   }
 
   function resetTransitVisuals() {
-    gsap.set([els.trainCar1, els.trainCar2], { x: 0 });
-    gsap.set(els.tunnelLights, { x: 0 });
-    setBlur(0);
+    TransitMap.reset(currentIndex);
   }
 
-  // Plays the depart/transit/arrive loop as a self-contained visual effect,
-  // independent of game state. The +=/-= tweens net to zero over a full
-  // cycle, always returning the train to wherever it started.
-  function buildTransitTimeline(onComplete) {
-    emit("subway:depart");
-    const train = [els.trainCar1, els.trainCar2];
-    const blur = { amount: 0 };
-    const applyBlur = () => setBlur(blur.amount);
-
-    activeTimeline = gsap.timeline({
-      onComplete: () => {
-        activeTimeline = null;
-        emit("subway:arrive");
-        if (onComplete) onComplete();
-        runQueuedTransit();
-      },
-    })
-      .to(train, { x: "+=900", duration: 0.7, ease: "power2.in" })
-      .to(els.tunnelLights, { x: "-=700", duration: 0.7, ease: "none" }, "<")
-      .to(blur, { amount: 7, duration: 0.5, ease: "power2.in", onUpdate: applyBlur }, "<")
-      .set(train, { x: "-=1800" })
-      .set(els.tunnelLights, { x: "+=1400" })
-      .to(train, { x: "+=900", duration: 0.7, ease: "power2.out" })
-      .to(els.tunnelLights, { x: "-=700", duration: 0.7, ease: "none" }, "<")
-      .to(blur, { amount: 0, duration: 0.55, ease: "power2.out", onUpdate: applyBlur }, "<");
-  }
-
-  // Answering fast enough to trigger a second transit before the first one
-  // finishes used to kill the running timeline mid-flight, leaving the train
-  // mid-transform and making the next run visually stutter/lag. Queue it
-  // instead so each transit always plays out fully before the next starts.
-  function runQueuedTransit() {
-    if (transitQueue.length === 0) return;
-    const next = transitQueue.shift();
-    buildTransitTimeline(next);
-  }
-
-  function queueTransit(onComplete) {
-    if (activeTimeline) {
-      transitQueue.push(onComplete || null);
-    } else {
-      buildTransitTimeline(onComplete);
-    }
-  }
-
-  function playTransit() {
-    queueTransit();
+  function playTransit(fromIndex, toIndex) {
+    TransitMap.queueTransition(fromIndex, toIndex);
   }
 
   function playFinalTransit() {
-    queueTransit(() => {
+    const fromIndex = currentIndex;
+    TransitMap.queueTransition(fromIndex, fromIndex + 1, () => {
       currentIndex += 1;
       updateProgressMap();
+      TransitMap.setProgress(currentIndex);
       els.signName.textContent = stations[currentIndex];
       showWin();
     });
@@ -384,8 +329,9 @@ const Game = (() => {
   }
 
   function advance() {
+    const fromIndex = currentIndex;
     commitAdvance();
-    playTransit();
+    playTransit(fromIndex, currentIndex);
   }
 
   // One card serves both endings; only the copy and the accent differ.
@@ -429,9 +375,6 @@ const Game = (() => {
     runOver = false;
     resetTimer();
     stopQuestionClock();
-    if (activeTimeline) activeTimeline.kill();
-    activeTimeline = null;
-    transitQueue = [];
     resetTransitVisuals();
     els.trackBar.classList.remove("hidden");
     els.winOverlay.classList.add("hidden");
@@ -486,6 +429,13 @@ const Game = (() => {
       mount: "keyboard",
       input: "answer-input",
       form: "answer-form",
+    });
+    TransitMap.init({
+      svgId: "map-scene",
+      data: SubwayMapData,
+      lineId: Stations.LINE_ID,
+      onDepart: () => emit("subway:depart"),
+      onArrive: () => emit("subway:arrive"),
     });
     buildProgressMap();
     render();
