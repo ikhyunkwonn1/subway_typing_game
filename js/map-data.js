@@ -1,8 +1,11 @@
 // Hand-drawn geographic data for the playable 6 line. Coordinates live in a
 // stable world space so future lines can share stations and geography.
 const SubwayMapData = {
-  width: 1000,
-  height: 2020,
+  // Extra world padding lets terminal stations sit at screen center without
+  // exposing an empty edge when the full-page camera follows the route.
+  width: 1600,
+  height: 2920,
+  bounds: { x: -300, y: -450, width: 1600, height: 2920 },
   lines: {
     "6": {
       name: "Lexington Av Local",

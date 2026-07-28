@@ -1,18 +1,17 @@
 // Visual-only map renderer. It deliberately has no typing or scoring logic.
 const TransitMap = (() => {
   const NS = "http://www.w3.org/2000/svg";
-  // The taller scene panel shows a broader stretch of the route at each stop.
-  const CAMERA = { width: 900, height: 480 };
+  const CAMERA_WIDTH = 900;
   let svg;
   let data;
   let line;
-  let marker;
   let stationNodes = [];
-  let camera = { x: 0, y: 0, width: CAMERA.width, height: CAMERA.height };
+  let camera = { x: 0, y: 0, width: CAMERA_WIDTH, height: 560 };
   let visualIndex = 0;
   let activeTimeline = null;
   let queue = [];
   let callbacks = {};
+  let resizeObserver;
 
   function node(tag, attrs = {}) {
     const el = document.createElementNS(NS, tag);
@@ -20,32 +19,39 @@ const TransitMap = (() => {
     return el;
   }
 
-  function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
-
   function stationAt(index) {
     return data.stations[line.stationIds[index]];
   }
 
+  function cameraDimensions() {
+    const bounds = svg.getBoundingClientRect();
+    const aspect = bounds.width && bounds.height ? bounds.width / bounds.height : 1.6;
+    return { width: CAMERA_WIDTH, height: CAMERA_WIDTH / aspect };
+  }
+
   function cameraFor(index) {
     const station = stationAt(index);
-    const centerX = clamp(station.x + 75, CAMERA.width / 2, data.width - CAMERA.width / 2);
-    const centerY = clamp(station.y, CAMERA.height / 2, data.height - CAMERA.height / 2);
-    return { x: centerX - CAMERA.width / 2, y: centerY - CAMERA.height / 2, width: CAMERA.width, height: CAMERA.height };
+    const size = cameraDimensions();
+    return {
+      x: station.x - size.width / 2,
+      y: station.y - size.height / 2,
+      width: size.width,
+      height: size.height,
+    };
   }
 
   function paintCamera() {
     svg.setAttribute("viewBox", `${camera.x} ${camera.y} ${camera.width} ${camera.height}`);
   }
 
-  function paintMarker(index) {
-    const station = stationAt(index);
-    marker.setAttribute("transform", `translate(${station.x} ${station.y})`);
-  }
-
   function drawGeography() {
-    svg.appendChild(node("rect", { x: 0, y: 0, width: data.width, height: data.height, fill: "#d9edf4" }));
+    const bounds = data.bounds || { x: 0, y: 0, width: data.width, height: data.height };
+    svg.appendChild(node("rect", { ...bounds, fill: "#d9edf4" }));
+
+    const northExtension = node("path", {
+      d: "M0 -450H1000V0H0Z",
+      fill: "#f8f4e8",
+    });
 
     const bronx = node("path", {
       d: "M0 0H1000V770L785 780 690 720 605 680 495 705 410 790 260 870 0 900Z",
@@ -55,7 +61,11 @@ const TransitMap = (() => {
       d: "M155 820C260 790 440 815 505 900L455 2020H155Z",
       fill: "#fbf7eb",
     });
-    svg.append(bronx, manhattan);
+    const lowerManhattan = node("path", {
+      d: "M155 1980H455V2470H155Z",
+      fill: "#fbf7eb",
+    });
+    svg.append(northExtension, bronx, manhattan, lowerManhattan);
 
     const eastRiver = node("path", {
       d: "M505 780C640 860 650 1040 560 1230 535 1360 555 1590 495 2020H1000V780Z",
@@ -69,6 +79,7 @@ const TransitMap = (() => {
     // place without trying to recreate real buildings or a tile map.
     const blocks = node("g", { opacity: 0.78 });
     [
+      [110, -280, 145, 72, "#f1d9c9"], [350, -155, 122, 85, "#e4d9ef"],
       [105, 115, 145, 72, "#f1d9c9"], [300, 165, 122, 85, "#e4d9ef"],
       [440, 250, 130, 78, "#f2e5bd"], [155, 335, 175, 85, "#d8e6d0"],
       [330, 455, 108, 105, "#f0d5cf"], [115, 570, 158, 75, "#e6d8ef"],
@@ -87,7 +98,7 @@ const TransitMap = (() => {
 
     const roads = node("g", { fill: "none", stroke: "#e6dfcf", "stroke-width": 13, "stroke-linecap": "round", opacity: 0.95 });
     [
-      "M70 180C250 220 420 285 720 285", "M45 455C255 430 440 500 695 620",
+      "M90 -200C310 -130 540 -85 845 -55", "M70 180C250 220 420 285 720 285", "M45 455C255 430 440 500 695 620",
       "M85 705C240 665 470 665 780 750", "M210 905L425 1985",
       "M120 1010L480 1010", "M165 1215L475 1215", "M165 1430L470 1430",
       "M170 1650L465 1650", "M170 1850L455 1850",
@@ -117,11 +128,6 @@ const TransitMap = (() => {
     });
     svg.appendChild(stationsLayer);
 
-    marker = node("g", { class: "map-train" });
-    marker.appendChild(node("circle", { r: 23, fill: line.color, stroke: "#ffffff", "stroke-width": 5 }));
-    marker.appendChild(node("rect", { x: -12, y: -9, width: 24, height: 18, rx: 5, fill: "#ffffff" }));
-    marker.appendChild(node("path", { d: "M-7 3H7M-7-2H-2M2-2H7M-7 10V13M7 10V13", fill: "none", stroke: line.color, "stroke-width": 3, "stroke-linecap": "round" }));
-    svg.appendChild(marker);
   }
 
   function setProgress(index) {
@@ -134,12 +140,17 @@ const TransitMap = (() => {
   function runNext() {
     if (!queue.length) return;
     const job = queue.shift();
-    const destination = stationAt(job.toIndex);
     const destinationCamera = cameraFor(job.toIndex);
     if (callbacks.onDepart) callbacks.onDepart();
 
-    const markerState = { x: stationAt(visualIndex).x, y: stationAt(visualIndex).y };
-    activeTimeline = gsap.timeline({
+    activeTimeline = gsap.to(camera, {
+      x: destinationCamera.x,
+      y: destinationCamera.y,
+      width: destinationCamera.width,
+      height: destinationCamera.height,
+      duration: 1.15,
+      ease: "power2.inOut",
+      onUpdate: paintCamera,
       onComplete: () => {
         visualIndex = job.toIndex;
         activeTimeline = null;
@@ -148,21 +159,12 @@ const TransitMap = (() => {
         runNext();
       },
     });
-    activeTimeline
-      .to(markerState, {
-        x: destination.x,
-        y: destination.y,
-        duration: 1.15,
-        ease: "power2.inOut",
-        onUpdate: () => marker.setAttribute("transform", `translate(${markerState.x} ${markerState.y})`),
-      })
-      .to(camera, {
-        x: destinationCamera.x,
-        y: destinationCamera.y,
-        duration: 1.15,
-        ease: "power2.inOut",
-        onUpdate: paintCamera,
-      }, "<");
+  }
+
+  function syncCameraToViewport() {
+    if (activeTimeline) return;
+    camera = cameraFor(visualIndex);
+    paintCamera();
   }
 
   function init(options) {
@@ -171,11 +173,18 @@ const TransitMap = (() => {
     line = data.lines[options.lineId];
     callbacks = options;
     svg.innerHTML = "";
-    svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    svg.setAttribute("preserveAspectRatio", "none");
     svg.setAttribute("aria-label", "Simplified map following the 6 train route");
     drawGeography();
     drawRoute();
     reset(0);
+    if ("ResizeObserver" in window) {
+      if (resizeObserver) resizeObserver.disconnect();
+      resizeObserver = new ResizeObserver(syncCameraToViewport);
+      resizeObserver.observe(svg);
+    } else {
+      window.addEventListener("resize", syncCameraToViewport);
+    }
   }
 
   function reset(index) {
@@ -185,12 +194,11 @@ const TransitMap = (() => {
     visualIndex = index;
     camera = cameraFor(index);
     paintCamera();
-    paintMarker(index);
     setProgress(index);
   }
 
   function queueTransition(fromIndex, toIndex, onComplete) {
-    if (!marker) return;
+    if (!svg) return;
     setProgress(toIndex);
     queue.push({ fromIndex, toIndex, onComplete });
     if (!activeTimeline) runNext();

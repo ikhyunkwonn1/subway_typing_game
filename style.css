@@ -45,21 +45,59 @@ body {
 }
 
 .app {
+  position: relative;
+  z-index: 10;
   height: 100dvh;
-  max-width: 1180px;
-  margin: 0 auto;
   padding: 16px 24px 20px;
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
-  gap: 12px;
+  pointer-events: none;
+}
+
+.app > * {
+  pointer-events: auto;
+}
+
+.map-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #d9edf4;
+}
+
+.map-train {
+  position: fixed;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  width: 62px;
+  height: 62px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 5px 7px rgb(0 67 31 / 0.3));
+}
+
+.map-train svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* ---------- Masthead ---------- */
 
 .masthead {
+  position: absolute;
+  top: 16px;
+  left: 24px;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid rgb(8 9 11 / 0.55);
+  border-radius: var(--r);
+  background: rgb(8 9 11 / 0.76);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.16);
+  backdrop-filter: blur(10px);
 }
 
 .bullet {
@@ -97,11 +135,19 @@ body {
 }
 
 .masthead-meta {
-  margin-left: auto;
+  position: fixed;
+  top: 170px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  padding: 7px 9px;
+  border: 1px solid rgb(8 9 11 / 0.55);
+  border-radius: var(--r);
+  background: rgb(8 9 11 / 0.76);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.16);
+  backdrop-filter: blur(10px);
 }
 
 .counter {
@@ -151,10 +197,9 @@ body {
 
 .timer {
   position: fixed;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 40;
+  top: 226px;
+  right: 24px;
+  z-index: 11;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -215,42 +260,6 @@ body {
   display: block;
 }
 
-/* ---------- Progress rail ---------- */
-
-.progress-map-wrap {
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.progress-map-wrap::-webkit-scrollbar {
-  display: none;
-}
-
-.progress-map {
-  display: block;
-}
-
-/* ---------- Scene ---------- */
-
-.scene-wrap {
-  position: relative;
-  min-height: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-  background: #d9edf4;
-  line-height: 0;
-}
-
-.scene-wrap #map-scene {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
 .map-stations circle {
   transition: fill 0.25s ease, stroke-width 0.25s ease, r 0.25s ease;
 }
@@ -264,24 +273,21 @@ body {
   stroke-width: 6;
 }
 
-.map-train {
-  filter: drop-shadow(0 4px 5px rgb(0 67 31 / 0.24));
-}
-
 .station-sign {
   position: absolute;
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  width: min(580px, calc(100% - 40px));
+  width: min(480px, calc(100% - 430px));
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 9px 14px;
   line-height: 1.15;
-  background: rgb(8 9 11 / 0.9);
-  border: 1px solid #23272d;
-  border-top-color: #383d44;
+  background: rgb(8 9 11 / 0.78);
+  border: 1px solid rgb(8 9 11 / 0.55);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.16);
+  backdrop-filter: blur(10px);
 }
 
 .station-sign-bullet {
@@ -318,8 +324,9 @@ body {
 /* ---------- Win overlay ---------- */
 
 .win-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 20;
   background: rgb(0 0 0 / 0.86);
   display: flex;
   align-items: center;
@@ -392,6 +399,11 @@ body {
 /* ---------- Answer zone ---------- */
 
 .answer-zone {
+  position: absolute;
+  bottom: clamp(130px, 20vh, 190px);
+  left: 50%;
+  width: min(760px, calc(100% - 32px));
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -406,6 +418,9 @@ body {
   padding: 10px 18px;
   border: 1px solid var(--line-strong);
   border-radius: 999px / 50%;
+  background: rgb(8 9 11 / 0.8);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+  backdrop-filter: blur(10px);
   transition: opacity 0.25s ease;
 }
 
@@ -538,7 +553,10 @@ body.is-competitive .question-ring {
 /* ---------- Keyboard mount ---------- */
 
 .keyboard-wrap {
-  position: relative;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
 }
@@ -742,12 +760,78 @@ body.is-competitive .question-ring {
   flex-direction: column;
 }
 
+@media (max-width: 760px) {
+  .app {
+    padding: 12px;
+  }
+
+  .masthead {
+    top: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+  }
+
+  .masthead-text h1 {
+    font-size: 15px;
+  }
+
+  .masthead-text p {
+    max-width: 205px;
+    font-size: 10px;
+  }
+
+  .masthead-meta {
+    top: 142px;
+    left: 12px;
+    right: auto;
+    gap: 7px;
+  }
+
+  .mode-btn {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+
+  .timer {
+    top: 198px;
+    right: 12px;
+    font-size: 18px;
+  }
+
+  .station-sign {
+    top: 235px;
+    width: calc(100% - 24px);
+  }
+
+  #sign-station-name {
+    font-size: 18px;
+  }
+
+  .answer-zone {
+    bottom: 118px;
+    width: calc(100% - 20px);
+  }
+
+  .track-bar {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .stop-chip {
+    font-size: 9px;
+  }
+
+  .keyboard-wrap {
+    bottom: 10px;
+  }
+}
+
 /* ---------- Atmosphere ---------- */
 
 .grain {
   position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: 3;
   pointer-events: none;
   opacity: 0.05;
   mix-blend-mode: overlay;
@@ -757,7 +841,7 @@ body.is-competitive .question-ring {
 .vignette {
   position: fixed;
   inset: 0;
-  z-index: 29;
+  z-index: 2;
   pointer-events: none;
   background: radial-gradient(125% 95% at 50% 40%, transparent 38%, rgb(0 0 0 / 0.6) 100%);
 }

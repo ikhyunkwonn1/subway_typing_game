@@ -1,9 +1,5 @@
 const Game = (() => {
   const stations = Stations.list;
-  const DOT_SPACING = 34;
-  const DOT_MARGIN = 20;
-  const TRACK_IDLE = "#2a2e35";
-  const DOT_STROKE = "#08090b";
 
   // Competitive mode: seconds allowed per station. Flat for every stop, so the
   // long Bronx names are the ones that bite. Retune here.
@@ -22,8 +18,6 @@ const Game = (() => {
   const els = {};
 
   function cacheEls() {
-    els.progressMap = document.getElementById("progress-map");
-    els.progressWrap = document.querySelector(".progress-map-wrap");
     els.signName = document.getElementById("sign-station-name");
     els.trackBar = document.getElementById("track-bar");
     els.prevChip = document.getElementById("prev-stop");
@@ -189,79 +183,6 @@ const Game = (() => {
     reset();
   }
 
-  function svgEl(tag) {
-    return document.createElementNS("http://www.w3.org/2000/svg", tag);
-  }
-
-  function buildProgressMap() {
-    const svg = els.progressMap;
-    svg.innerHTML = "";
-    const width = DOT_MARGIN * 2 + DOT_SPACING * (stations.length - 1);
-    svg.setAttribute("width", width);
-    svg.setAttribute("viewBox", `0 0 ${width} 56`);
-
-    const lineY = 28;
-    const track = svgEl("line");
-    track.setAttribute("x1", DOT_MARGIN);
-    track.setAttribute("y1", lineY);
-    track.setAttribute("x2", width - DOT_MARGIN);
-    track.setAttribute("y2", lineY);
-    track.setAttribute("stroke", TRACK_IDLE);
-    track.setAttribute("stroke-width", 6);
-    track.setAttribute("stroke-linecap", "round");
-    svg.appendChild(track);
-
-    const progressLine = svgEl("line");
-    progressLine.setAttribute("id", "progress-line-fill");
-    progressLine.setAttribute("x1", DOT_MARGIN);
-    progressLine.setAttribute("y1", lineY);
-    progressLine.setAttribute("x2", DOT_MARGIN);
-    progressLine.setAttribute("y2", lineY);
-    progressLine.setAttribute("stroke", Stations.LINE_COLOR);
-    progressLine.setAttribute("stroke-width", 6);
-    progressLine.setAttribute("stroke-linecap", "round");
-    svg.appendChild(progressLine);
-
-    stations.forEach((name, i) => {
-      const cx = DOT_MARGIN + i * DOT_SPACING;
-      const circle = svgEl("circle");
-      circle.setAttribute("cx", cx);
-      circle.setAttribute("cy", lineY);
-      circle.setAttribute("r", i === currentIndex ? 9 : 5);
-      circle.setAttribute("fill", i <= currentIndex ? Stations.LINE_COLOR : TRACK_IDLE);
-      circle.setAttribute("stroke", DOT_STROKE);
-      circle.setAttribute("stroke-width", 2);
-      circle.classList.add("progress-dot");
-
-      const title = svgEl("title");
-      title.textContent = name;
-      circle.appendChild(title);
-      svg.appendChild(circle);
-    });
-  }
-
-  function updateProgressMap() {
-    const svg = els.progressMap;
-    const dots = svg.querySelectorAll(".progress-dot");
-    dots.forEach((dot, i) => {
-      gsap.to(dot, {
-        attr: {
-          r: i === currentIndex ? 9 : 5,
-          fill: i <= currentIndex ? Stations.LINE_COLOR : TRACK_IDLE,
-        },
-        duration: 0.35,
-      });
-    });
-
-    const progressLine = svg.querySelector("#progress-line-fill");
-    const cx = DOT_MARGIN + currentIndex * DOT_SPACING;
-    gsap.to(progressLine, { attr: { x2: cx }, duration: 0.5, ease: "power2.out" });
-
-    const wrap = els.progressWrap;
-    const targetScroll = Math.max(0, cx - wrap.clientWidth / 2);
-    gsap.to(wrap, { scrollLeft: targetScroll, duration: 0.5, ease: "power2.out" });
-  }
-
   function render() {
     els.signName.textContent = stations[currentIndex];
     updateCounter();
@@ -315,7 +236,6 @@ const Game = (() => {
     const fromIndex = currentIndex;
     TransitMap.queueTransition(fromIndex, fromIndex + 1, () => {
       currentIndex += 1;
-      updateProgressMap();
       TransitMap.setProgress(currentIndex);
       els.signName.textContent = stations[currentIndex];
       showWin();
@@ -324,7 +244,6 @@ const Game = (() => {
 
   function commitAdvance() {
     currentIndex += 1;
-    updateProgressMap();
     render();
   }
 
@@ -378,7 +297,6 @@ const Game = (() => {
     resetTransitVisuals();
     els.trackBar.classList.remove("hidden");
     els.winOverlay.classList.add("hidden");
-    buildProgressMap();
     render();
   }
 
@@ -437,7 +355,6 @@ const Game = (() => {
       onDepart: () => emit("subway:depart"),
       onArrive: () => emit("subway:arrive"),
     });
-    buildProgressMap();
     render();
   }
 

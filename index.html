@@ -10,6 +10,16 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <svg id="map-scene" class="map-scene" role="img"></svg>
+
+  <div class="map-train" aria-hidden="true">
+    <svg viewBox="-28 -28 56 56">
+      <circle r="23" fill="#00933C" stroke="#ffffff" stroke-width="5" />
+      <rect x="-12" y="-9" width="24" height="18" rx="5" fill="#ffffff" />
+      <path d="M-7 3H7M-7-2H-2M2-2H7M-7 10V13M7 10V13" fill="none" stroke="#00933C" stroke-width="3" stroke-linecap="round" />
+    </svg>
+  </div>
+
   <div class="app">
     <header class="masthead">
       <div class="bullet" id="line-bullet">6</div>
@@ -38,29 +48,10 @@
       </div>
     </header>
 
-    <div class="progress-map-wrap">
-      <svg id="progress-map" class="progress-map" height="56"></svg>
+    <div class="station-sign">
+      <span class="station-sign-bullet">6</span>
+      <span id="sign-station-name">Pelham Bay Park</span>
     </div>
-
-    <main class="scene-wrap">
-      <!-- Anchored to the bottom so a short scene crops sky, never the train -->
-      <svg id="map-scene" role="img"></svg>
-
-      <!-- Wayfinding sign lives in HTML so the SVG crop can never hide it -->
-      <div class="station-sign">
-        <span class="station-sign-bullet">6</span>
-        <span id="sign-station-name">Pelham Bay Park</span>
-      </div>
-
-      <div id="win-overlay" class="win-overlay hidden">
-        <div class="win-card">
-          <span class="win-eyebrow" id="result-eyebrow">End of the line</span>
-          <div class="win-title" id="result-title">Brooklyn Bridge–City Hall</div>
-          <p id="result-body">All 38 stops from Pelham Bay Park. Everybody off.</p>
-          <button id="restart-btn" type="button">Ride again</button>
-        </div>
-      </div>
-    </main>
 
     <div class="answer-zone">
       <div class="track-bar" id="track-bar">
@@ -99,6 +90,15 @@
 
     <div class="keyboard-wrap">
       <div id="keyboard"></div>
+    </div>
+
+    <div id="win-overlay" class="win-overlay hidden">
+      <div class="win-card">
+        <span class="win-eyebrow" id="result-eyebrow">End of the line</span>
+        <div class="win-title" id="result-title">Brooklyn Bridge–City Hall</div>
+        <p id="result-body">All 38 stops from Pelham Bay Park. Everybody off.</p>
+        <button id="restart-btn" type="button">Ride again</button>
+      </div>
     </div>
   </div>
 
