@@ -111,6 +111,74 @@ body {
   color: var(--fg-dim);
 }
 
+/* ---------- Mode toggle ---------- */
+
+.mode-toggle {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+.mode-btn {
+  padding: 4px 9px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.mode-btn:hover {
+  color: var(--fg);
+}
+
+.mode-btn.is-active {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--fg);
+}
+
+/* Competitive runs hot — the one place the safety yellow earns its keep. */
+.mode-btn.is-active[data-mode="competitive"] {
+  color: var(--safety-yellow);
+}
+
+.timer {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  transition: color 0.3s ease;
+}
+
+/* A dot keeps the two mono readouts from reading as one string. */
+.timer::before {
+  content: "";
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #3a3b40;
+}
+
+/* Dimmed until the first keystroke; the final time stays lit. */
+.timer.is-idle {
+  color: var(--fg-dim);
+}
+
 .mute {
   width: 28px;
   height: 28px;
@@ -295,6 +363,15 @@ body {
   background: #00a844;
 }
 
+/* Same card, failed run — the accent flips to the error red. */
+.win-overlay.is-fail .win-card {
+  border-left-color: var(--error);
+}
+
+.win-overlay.is-fail .win-eyebrow {
+  color: var(--error);
+}
+
 /* ---------- Answer zone ---------- */
 
 .answer-zone {
@@ -304,6 +381,7 @@ body {
 }
 
 .track-bar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -401,6 +479,32 @@ body {
 
 .answer-form input.wrong {
   border-bottom-color: var(--error);
+}
+
+/* ---------- Per-question countdown ---------- */
+
+/* Overlays the track bar and traces its outline; the pill's own 1px border is
+   the unlit track underneath. Casual mode never shows it. */
+.question-ring {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+body.is-competitive .question-ring {
+  display: block;
+}
+
+/* Geometry and dash pattern are set from JS — see layoutRing(). */
+.question-ring-fill {
+  fill: none;
+  stroke: var(--mta-green);
+  stroke-width: 2;
+  stroke-linecap: round;
 }
 
 .feedback {

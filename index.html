@@ -18,7 +18,12 @@
         <p id="header-subtitle">Pelham Bay Park → Brooklyn Bridge–City Hall</p>
       </div>
       <div class="masthead-meta">
+        <div class="mode-toggle" id="mode-toggle" role="group" aria-label="Game mode">
+          <button type="button" class="mode-btn is-active" data-mode="casual" aria-pressed="true">Casual</button>
+          <button type="button" class="mode-btn" data-mode="competitive" aria-pressed="false">Competitive</button>
+        </div>
         <span class="counter" id="stop-counter">01 / 38</span>
+        <span class="timer is-idle" id="timer">00:00</span>
         <button type="button" id="mute-btn" class="mute" aria-pressed="false" aria-label="Mute sound">
           <svg class="mute-on" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 15H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h2l3.5-4.5a.8.8 0 0 1 1.5.5v14a.8.8 0 0 1-1.5.5L6 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
@@ -251,9 +256,9 @@
 
       <div id="win-overlay" class="win-overlay hidden">
         <div class="win-card">
-          <span class="win-eyebrow">End of the line</span>
-          <div class="win-title">Brooklyn Bridge–City Hall</div>
-          <p>All 38 stops from Pelham Bay Park. Everybody off.</p>
+          <span class="win-eyebrow" id="result-eyebrow">End of the line</span>
+          <div class="win-title" id="result-title">Brooklyn Bridge–City Hall</div>
+          <p id="result-body">All 38 stops from Pelham Bay Park. Everybody off.</p>
           <button id="restart-btn" type="button">Ride again</button>
         </div>
       </div>
@@ -261,6 +266,11 @@
 
     <div class="answer-zone">
       <div class="track-bar" id="track-bar">
+        <!-- Competitive-only: traces the pill's own border as the question clock -->
+        <svg id="question-ring" class="question-ring" aria-hidden="true">
+          <path id="question-ring-fill" class="question-ring-fill" />
+        </svg>
+
         <div class="stop-chip stop-chip--prev" id="prev-stop">
           <svg class="chip-arrow" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M15 4l-8 8 8 8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
