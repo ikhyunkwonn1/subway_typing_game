@@ -5,7 +5,6 @@ const Game = (() => {
   // long Bronx names are the ones that bite. Retune here.
   const QUESTION_TIME = 10;
   const MODE_KEY = "subway:mode";
-  const RING_INSET = 0.5; // centres the 2px stroke on the pill's 1px border
 
   let currentIndex = 0;
   let startedAt = null;
@@ -84,56 +83,21 @@ const Game = (() => {
 
   // ---------- Competitive mode: per-question clock ----------
 
-  function lengthToPx(value, basis) {
-    return value.endsWith("%") ? (parseFloat(value) / 100) * basis : parseFloat(value);
-  }
-
-  // CSS shrinks every corner radius by one shared factor when they overflow the
-  // box, while SVG clamps each axis independently — so tracing the pill means
-  // redoing the CSS maths, or the line sits off its border.
-  function pillRadii(w, h) {
-    const corner = getComputedStyle(els.trackBar).borderTopLeftRadius.split(" ");
-    const rx = lengthToPx(corner[0], w);
-    const ry = lengthToPx(corner[1] || corner[0], h);
-    const scale = Math.min(1, w / (rx * 2), h / (ry * 2));
-    return { rx: rx * scale, ry: ry * scale };
-  }
-
-  // Starts at top-centre and runs clockwise, so the burn reads like a clock hand.
-  function pillPath(w, h, rx, ry) {
-    const left = RING_INSET;
-    const top = RING_INSET;
-    const right = w - RING_INSET;
-    const bottom = h - RING_INSET;
-    const ax = Math.max(0, rx - RING_INSET);
-    const ay = Math.max(0, ry - RING_INSET);
-    const arc = `A ${ax} ${ay} 0 0 1`;
-
-    return (
-      `M ${w / 2} ${top} H ${right - ax} ${arc} ${right} ${top + ay}` +
-      ` V ${bottom - ay} ${arc} ${right - ax} ${bottom}` +
-      ` H ${left + ax} ${arc} ${left} ${bottom - ay}` +
-      ` V ${top + ay} ${arc} ${left + ax} ${top} H ${w / 2}`
-    );
-  }
-
-  // A negative offset walks the dash forward along the path, so the unlit run
-  // grows clockwise from top-centre and the lit remainder closes in behind it.
   function paintRing(p) {
     els.ringFill.setAttribute("stroke-dasharray", ringLength);
     els.ringFill.setAttribute("stroke-dashoffset", -p * ringLength);
   }
 
-  // Re-measured on resize, so a mid-question reflow can't desync the drain.
   function layoutRing() {
     const w = els.trackBar.offsetWidth;
-    const h = els.trackBar.offsetHeight;
-    if (!w || !h) return;
+    if (!w) return;
 
-    const { rx, ry } = pillRadii(w, h);
-    els.ring.setAttribute("viewBox", "0 0 " + w + " " + h);
-    els.ringFill.setAttribute("d", pillPath(w, h, rx, ry));
-    ringLength = els.ringFill.getTotalLength();
+    els.ring.setAttribute("viewBox", "0 0 " + w + " 4");
+    els.ringFill.setAttribute("x1", 0);
+    els.ringFill.setAttribute("y1", 2);
+    els.ringFill.setAttribute("x2", w);
+    els.ringFill.setAttribute("y2", 2);
+    ringLength = w;
     paintRing(drain.p);
   }
 
