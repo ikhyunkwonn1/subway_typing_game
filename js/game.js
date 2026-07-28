@@ -13,6 +13,7 @@ const Game = (() => {
 
   let currentIndex = 0;
   let activeTimeline = null;
+  let transitQueue = [];
   let startedAt = null;
   let tickHandle = null;
   let questionTimeline = null;
@@ -321,17 +322,7 @@ const Game = (() => {
   // Plays the depart/transit/arrive loop as a self-contained visual effect,
   // independent of game state. The +=/-= tweens net to zero over a full
   // cycle, always returning the train to wherever it started.
-  //
-  // Answering fast enough to trigger this while a previous run is still
-  // mid-flight kills that timeline instead of waiting for it — but killing it
-  // mid-transform used to leave the train/lights/blur sitting at whatever
-  // odd offset the kill landed on, so the next run's relative +=/-= tweens
-  // compounded on top of that and drifted. Snapping everything back to its
-  // rest state right before rebuilding keeps the cancel-and-restart feel
-  // while guaranteeing every run starts from the same clean position.
   function buildTransitTimeline(onComplete) {
-    if (activeTimeline) activeTimeline.kill();
-    resetTransitVisuals();
     emit("subway:depart");
     const train = [els.trainCar1, els.trainCar2];
     const blur = { amount: 0 };
@@ -342,6 +333,7 @@ const Game = (() => {
         activeTimeline = null;
         emit("subway:arrive");
         if (onComplete) onComplete();
+        runQueuedTransit();
       },
     })
       .to(train, { x: "+=900", duration: 0.7, ease: "power2.in" })
@@ -354,12 +346,30 @@ const Game = (() => {
       .to(blur, { amount: 0, duration: 0.55, ease: "power2.out", onUpdate: applyBlur }, "<");
   }
 
+  // Answering fast enough to trigger a second transit before the first one
+  // finishes used to kill the running timeline mid-flight, leaving the train
+  // mid-transform and making the next run visually stutter/lag. Queue it
+  // instead so each transit always plays out fully before the next starts.
+  function runQueuedTransit() {
+    if (transitQueue.length === 0) return;
+    const next = transitQueue.shift();
+    buildTransitTimeline(next);
+  }
+
+  function queueTransit(onComplete) {
+    if (activeTimeline) {
+      transitQueue.push(onComplete || null);
+    } else {
+      buildTransitTimeline(onComplete);
+    }
+  }
+
   function playTransit() {
-    buildTransitTimeline();
+    queueTransit();
   }
 
   function playFinalTransit() {
-    buildTransitTimeline(() => {
+    queueTransit(() => {
       currentIndex += 1;
       updateProgressMap();
       els.signName.textContent = stations[currentIndex];
@@ -421,6 +431,7 @@ const Game = (() => {
     stopQuestionClock();
     if (activeTimeline) activeTimeline.kill();
     activeTimeline = null;
+    transitQueue = [];
     resetTransitVisuals();
     els.trackBar.classList.remove("hidden");
     els.winOverlay.classList.add("hidden");
